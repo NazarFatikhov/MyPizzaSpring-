@@ -1,15 +1,16 @@
 package buu.mypizza.mappers;
 
 import buu.mypizza.dto.ProductDTO;
-import buu.mypizza.dto.ProductsOrdersDTO;
 import buu.mypizza.models.Product;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author nazar
  */
+@Component
 public class ProductDTOMapper implements Mapper<ProductDTO, Product>{
 
     @Override

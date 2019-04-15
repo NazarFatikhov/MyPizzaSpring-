@@ -1,17 +1,9 @@
 package buu.mypizza.repositorys;
 
 import buu.mypizza.dao.DAO;
-import buu.mypizza.dao.ProductDAO;
-import buu.mypizza.dao.ProductsOrdersDAO;
-import buu.mypizza.dto.OrderDTO;
 import buu.mypizza.dto.ProductDTO;
-import buu.mypizza.dto.ProductsOrdersDTO;
 import buu.mypizza.mappers.Mapper;
-import buu.mypizza.mappers.ProductDTOMapper;
-import buu.mypizza.mappers.ProductMapper;
-import buu.mypizza.models.Order;
 import buu.mypizza.models.Product;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,8 +17,10 @@ public class ProductsRepository implements Repository<Product>{
     
     @Autowired
     private DAO<ProductDTO> dao;
-    private Mapper productMapper = new ProductMapper();
-    private Mapper productDTOMapper = new ProductDTOMapper();
+    @Autowired
+    private Mapper productMapper;
+    @Autowired
+    private Mapper productDTOMapper;
     
     @Override
     public void add(Product product){
