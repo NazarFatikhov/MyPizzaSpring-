@@ -4,11 +4,14 @@ import buu.mypizza.dto.UserDTO;
 import buu.mypizza.models.User;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author nazar
  */
+
+@Component
 public class UserMapper implements Mapper<User, UserDTO>{
 
     @Override

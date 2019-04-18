@@ -22,26 +22,38 @@ import buu.mypizza.models.Product;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author nazar
  */
+@Component
 public class OrderRepository implements Repository<Order>{
 
-    DAO<OrderDTO> orderDao;
+    @Autowired
+    DAO<OrderDTO> orderDAO;
+    @Autowired
+    DAO<ProductsOrdersDTO> productsOrdersDAO;
+    @Autowired
+    DAO<ProductDTO> productDAO;
+    @Autowired
+    DAO<UserDTO> userDAO;
+    @Autowired
+    Mapper productDTOMapper;
+    @Autowired    
+    ThreeMapper orderMapper;
+    @Autowired
+    Repository userRepository;
+    @Autowired        
+    Repository productsRepository;
+    @Autowired    
+    BiMapper orderDTOMapper;
 
-    public OrderRepository() {
-        this.orderDao = new OrderDAO();
-    }
-
-    public OrderRepository(DAO orderDao) {
-        this.orderDao = orderDao;
-    }
-    
     @Override
     public boolean isExist(Order order) {
-        List<OrderDTO> orderDtos = orderDao.getAll();
+        List<OrderDTO> orderDtos = orderDAO.getAll();
         for(OrderDTO orderDto : orderDtos){
             if(orderDto.getId() == order.getOrdeNum()){
                 return true;
@@ -51,15 +63,10 @@ public class OrderRepository implements Repository<Order>{
     }
     
     private Order getOrder(OrderDTO orderDto){
-        DAO poDao = new ProductsOrdersDAO();
-        DAO pDao = new ProductDAO();
-        DAO uDao = new UserDAO();
-        UserDTO user = (UserDTO) uDao.get(orderDto.getUserId()).get();
-        Mapper mapper = new ProductDTOMapper();
-        ThreeMapper orderMapper = new OrderMapper();
+        UserDTO user = (UserDTO) userDAO.get(orderDto.getUserId()).get();
         List<ProductDTO> productDtos = new ArrayList<>();
-        List<ProductDTO> allProductDtos = pDao.getAll();
-        List<ProductsOrdersDTO> poDtos = poDao.getAll();
+        List<ProductDTO> allProductDtos = productDAO.getAll();
+        List<ProductsOrdersDTO> poDtos = productsOrdersDAO.getAll();
         for(ProductDTO productDto : allProductDtos){
             for(ProductsOrdersDTO poDto : poDtos){
                 if(productDto.getId() == poDto.getProductId() && orderDto.getId() == poDto.getOrderId()){
@@ -78,7 +85,7 @@ public class OrderRepository implements Repository<Order>{
     }
 
     private int getLastOrderNum(){
-        List<OrderDTO> orderDtos = orderDao.getAll();
+        List<OrderDTO> orderDtos = orderDAO.getAll();
         List<Integer> ids = new ArrayList<>();
         for(OrderDTO orderDto: orderDtos){
             ids.add(orderDto.getId());
@@ -91,7 +98,7 @@ public class OrderRepository implements Repository<Order>{
     public Order getByStringKey(String orderNum) {
         Order order = null;
         int ordNum = Integer.parseInt(orderNum);
-        List<OrderDTO> orders = orderDao.getAll();
+        List<OrderDTO> orders = orderDAO.getAll();
         ThreeMapper mapper = new OrderMapper();
         for(OrderDTO orderDto : orders){
             if(orderDto.getId() == ordNum){
@@ -105,16 +112,12 @@ public class OrderRepository implements Repository<Order>{
     @Override
     public void add(Order order) {
         order.setOrdeNum(getLastOrderNum() + 1);
-        Repository userRep = new UserRepository();
-        Repository productRepo = new ProductsRepository();
-        DAO productsOrdersDao = new ProductsOrdersDAO();
-        BiMapper orderMapper = new OrderDTOMapper();
-        int userId = userRep.getIdByStringKey(order.getOwner().getEmail());
-        OrderDTO orderDto = (OrderDTO) orderMapper.map(order, userId);
-        orderDao.save(orderDto);
+        int userId = userRepository.getIdByStringKey(order.getOwner().getEmail());
+        OrderDTO orderDto = (OrderDTO) orderDTOMapper.map(order, userId);
+        orderDAO.save(orderDto);
         for (Product product : order.getProducts()) {
-            ProductsOrdersDTO poDto = new ProductsOrdersDTO(order.getOrdeNum(), productRepo.getIdByStringKey(product.getName()));
-            productsOrdersDao.save(poDto);
+            ProductsOrdersDTO poDto = new ProductsOrdersDTO(order.getOrdeNum(), productsRepository.getIdByStringKey(product.getName()));
+            productsOrdersDAO.save(poDto);
         }
     }
 

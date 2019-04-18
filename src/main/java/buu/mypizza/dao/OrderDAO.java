@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
  *
  * @author nazar
  */
+@Component
 public class OrderDAO implements DAO<OrderDTO>{
 
     @Override

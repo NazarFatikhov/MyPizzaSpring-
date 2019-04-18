@@ -1,11 +1,18 @@
 package buu.mypizza.repositorys;
 
 import buu.mypizza.dao.DAO;
+import buu.mypizza.dao.ProductDAO;
+import buu.mypizza.dao.UserDAO;
 import buu.mypizza.dto.ProductDTO;
 import buu.mypizza.mappers.Mapper;
+import buu.mypizza.mappers.ProductDTOMapper;
+import buu.mypizza.mappers.ProductMapper;
 import buu.mypizza.models.Product;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,11 +23,11 @@ import org.springframework.stereotype.Component;
 public class ProductsRepository implements Repository<Product>{
     
     @Autowired
-    private DAO<ProductDTO> dao;
-    @Autowired
-    private Mapper productMapper;
+    private DAO productDAO;
     @Autowired
     private Mapper productDTOMapper;
+    @Autowired
+    private Mapper productMapper;
     
     @Override
     public void add(Product product){
@@ -32,13 +39,13 @@ public class ProductsRepository implements Repository<Product>{
             //TODO throw ModelNullFieldException
         }
         else{
-            dao.save((ProductDTO) productDTOMapper.map(product));
+            productDAO.save((ProductDTO) productMapper.map(product));
         }
     }
     
     @Override
     public Product getByStringKey(String name){
-        List<Product> products = productDTOMapper.mapList(dao.getAll());
+        List<Product> products = productDTOMapper.mapList(productDAO.getAll());
         for(Product p : products){
             if(p.getName().equals(name)){
                 return p;
@@ -49,7 +56,7 @@ public class ProductsRepository implements Repository<Product>{
     
     @Override
     public boolean isExist(Product product){
-        List<Product> products = productMapper.mapList(dao.getAll());
+        List<Product> products = productMapper.mapList(productDAO.getAll());
         for (Product p : products){
             if(p.getName().equals(product.getName())){
                 return true;
@@ -60,10 +67,10 @@ public class ProductsRepository implements Repository<Product>{
     
     @Override
     public void update(Product product, String[] fileds){
-        List<ProductDTO> products = dao.getAll();
+        List<ProductDTO> products = productDAO.getAll();
         for(ProductDTO p : products){
             if(p.getName().equals(product.getName())){
-                dao.update(p, fileds);
+                productDAO.update(p, fileds);
                 break;
             }
         }
@@ -81,7 +88,7 @@ public class ProductsRepository implements Repository<Product>{
 
     @Override
     public int getIdByStringKey(String name) {
-        List<ProductDTO> productDtos = dao.getAll();
+        List<ProductDTO> productDtos = productDAO.getAll();
         for(ProductDTO productDto : productDtos){
             if(productDto.getName().equals(name)){
                 return productDto.getId();

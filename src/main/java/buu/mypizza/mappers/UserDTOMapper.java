@@ -1,18 +1,19 @@
 package buu.mypizza.mappers;
 
-import buu.mypizza.dto.ProductDTO;
 import buu.mypizza.dto.UserDTO;
 import buu.mypizza.models.Admin;
 import buu.mypizza.models.Client;
-import buu.mypizza.models.Product;
 import buu.mypizza.models.User;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author nazar
  */
+
+@Component
 public class UserDTOMapper implements Mapper<UserDTO, User>{
     
     public User map(UserDTO dto){

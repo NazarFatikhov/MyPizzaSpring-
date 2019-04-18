@@ -8,11 +8,13 @@ import buu.mypizza.models.Product;
 import buu.mypizza.models.User;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author nazar
  */
+@Component
 public class OrderMapper implements ThreeMapper<OrderDTO, List<ProductDTO>, UserDTO, Order> {
 
     @Override

@@ -1,5 +1,6 @@
 package buu.mypizza.presentation;
 
+import buu.mypizza.config.AppConfig;
 import buu.mypizza.dao.DAO;
 import buu.mypizza.dto.OrderDTO;
 import buu.mypizza.exceptions.DBException;
@@ -16,15 +17,19 @@ import buu.mypizza.services.OrderActionService;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
  *
- * @author nazar"
+ * @author nazar
  */
 public class Main {
     

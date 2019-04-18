@@ -1,5 +1,6 @@
 package buu.mypizza.presentation;
 
+import buu.mypizza.config.AppConfig;
 import buu.mypizza.models.Admin;
 import buu.mypizza.models.Client;
 import buu.mypizza.models.Product;
@@ -7,20 +8,26 @@ import buu.mypizza.models.User;
 import buu.mypizza.repositorys.ProductsRepository;
 import buu.mypizza.repositorys.Repository;
 import buu.mypizza.services.AdminActionService;
+import buu.mypizza.services.OrderActionService;
 import java.util.Scanner;
 import java.util.stream.Stream;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  *
  * @author Kseniia
  */
 public class AdministrationVlogConsoleApplication {
+    private AdminActionService adminActionService;
     private enum Products{GARLIC, CHEESE,EXOTIC ,TOMATO ,CREAMY, Dough, Chicken, Bacon, Shrimp, Sausage, Pineapples, Tomatoes, Pepper, Broccoli, Onion, Olives};
     private final String space="         ";
     private Admin user;
      Scanner input = new Scanner(System.in);
     AdministrationVlogConsoleApplication(Admin user) {
         this.user=user;
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        adminActionService = context.getBean(AdminActionService.class);
     }
 
     public void start() {
@@ -41,8 +48,7 @@ public class AdministrationVlogConsoleApplication {
                     //noDone=false;
                 } else {
                     if (0 <= Integer.parseInt(id) && Integer.parseInt(id) < Products.values().length) {
-                        AdminActionService service = new AdminActionService();
-                        service.addProductBalance(Products.values()[Integer.parseInt(id)].toString(), Integer.parseInt(count));
+                        adminActionService.addProductBalance(Products.values()[Integer.parseInt(id)].toString(), Integer.parseInt(count));
                         //************** db******************--->>>
                         //Products.values()[Integer.parseInt(id)].toString - название продукта
                         //Integer.parseInt(count) - количество, которое следует прибавить

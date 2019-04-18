@@ -8,11 +8,13 @@ import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author nazar
  */
+@Component
 public class OrderDTOMapper implements BiMapper<Order, Integer, OrderDTO>{
 
     @Override

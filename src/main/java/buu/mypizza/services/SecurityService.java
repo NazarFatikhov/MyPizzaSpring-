@@ -1,6 +1,6 @@
 package buu.mypizza.services;
 
-import buu.mypizza.dao.UserDAO;
+import buu.mypizza.config.AppConfig;
 import buu.mypizza.exceptions.ModelNullFieldException;
 import buu.mypizza.exceptions.UserDublicateException;
 import buu.mypizza.models.User;
@@ -9,6 +9,8 @@ import buu.mypizza.exceptions.UserDublicateLoggedException;
 import buu.mypizza.exceptions.IncorrectPasswordException;
 import buu.mypizza.exceptions.UserNotFoundException;
 import buu.mypizza.repositorys.Repository;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  *
@@ -18,19 +20,21 @@ public class SecurityService {
     
     private static SecurityService instance = null;
     
-    private Repository<User> repo = new UserRepository(new UserDAO());
+    private static Repository<User> pruductsRepository;
     
     private User loggedUser = null;
     
     public static SecurityService newInstance(){
         if (instance == null){
+            ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+            pruductsRepository = context.getBean(UserRepository.class);
             instance = new SecurityService();
         }
         return instance;
     }
     
     public void signUpUser(String email, String password) throws UserDublicateException, ModelNullFieldException {
-        User user = repo.getByStringKey(email);
+        User user = pruductsRepository.getByStringKey(email);
         if(user == null){
             throw new UserDublicateException();
         }
@@ -38,12 +42,12 @@ public class SecurityService {
             throw new ModelNullFieldException();
         }
         else{
-            repo.add(user);
+            pruductsRepository.add(user);
         }
     }
     
     public void signInUser(String email, String password) throws UserDublicateLoggedException, IncorrectPasswordException, UserNotFoundException{
-        User user = repo.getByStringKey(email);
+        User user = pruductsRepository.getByStringKey(email);
         if(loggedUser != null){
             throw new UserDublicateLoggedException();
         }
@@ -65,7 +69,7 @@ public class SecurityService {
     }
     
     public User getUserByEmail(String email) throws UserNotFoundException{
-        User user = repo.getByStringKey(email);
+        User user = pruductsRepository.getByStringKey(email);
         if(user == null){
             throw new UserNotFoundException();
         }
@@ -75,7 +79,7 @@ public class SecurityService {
     }
     
     public boolean isCorrectPassword(String email, String password){
-        User realUser = repo.getByStringKey(email);
+        User realUser = pruductsRepository.getByStringKey(email);
         if(realUser.getPassword().equals(password)){
             return true;
         }
@@ -91,7 +95,7 @@ public class SecurityService {
     }
 
     public Repository getRepo() {
-        return repo;
+        return pruductsRepository;
     }
 
     public User getLoggedUser() {
@@ -103,7 +107,7 @@ public class SecurityService {
     }
 
     public void setRepo(UserRepository repo) {
-        this.repo = repo;
+        this.pruductsRepository = repo;
     }
 
     public void setLoggedUser(User loggedUser) {
@@ -114,7 +118,7 @@ public class SecurityService {
 
     @Override
     public String toString() {
-        return "SecurityService{" + "repo=" + repo + ", loggedUser=" + loggedUser + '}';
+        return "SecurityService{" + "repo=" + pruductsRepository + ", loggedUser=" + loggedUser + '}';
     }
     
     

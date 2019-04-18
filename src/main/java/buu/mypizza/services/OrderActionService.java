@@ -1,5 +1,6 @@
 package buu.mypizza.services;
 
+import buu.mypizza.config.AppConfig;
 import buu.mypizza.models.Order;
 import buu.mypizza.models.User;
 import buu.mypizza.models.Product;
@@ -12,24 +13,33 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author nazar
  */
+@Component
 public class OrderActionService {
     
+    @Autowired
+    Repository orderRepository;
+    @Autowired
+    Repository productsRepository;
+    @Autowired
+    Repository userRepository;
+
     public void createOrder(String emailUser, Map<String, Integer> products, String address, String comment){
-        Repository orderRepository = new OrderRepository();
-        Repository productRepository = new ProductsRepository();
-        Repository userRepository = new UserRepository();
         User owner = (User) userRepository.getByStringKey(emailUser);
         List<Product> productsList = new ArrayList<>();
         int priceOfAllProducts = 0;
         for (String productName : products.keySet()){
-            Product product = (Product) productRepository.getByStringKey(productName);
+            Product product = (Product) productsRepository.getByStringKey(productName);
             String[] newProductFields = {product.getName(), Double.toString(product.getPrice()), Integer.toString(product.getBalance() - products.get(productName))};
-            productRepository.update(product, newProductFields);
+            productsRepository.update(product, newProductFields);
             priceOfAllProducts += products.get(productName) * product.getPrice();
             productsList.add(product);
         }
@@ -38,8 +48,7 @@ public class OrderActionService {
     }
     
     public double getPriceForProduct(String productName){
-        Repository productRepository = new ProductsRepository();
-        Product product = (Product) productRepository.getByStringKey(productName);
+        Product product = (Product) productsRepository.getByStringKey(productName);
         return product.getPrice();
     }
     

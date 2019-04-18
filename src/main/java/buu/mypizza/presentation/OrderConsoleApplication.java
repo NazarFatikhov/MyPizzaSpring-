@@ -1,9 +1,12 @@
 package buu.mypizza.presentation;
 
+import buu.mypizza.config.AppConfig;
 import buu.mypizza.models.Client;
 import buu.mypizza.services.OrderActionService;
 import java.util.Scanner;
 import java.util.stream.Stream;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  *
@@ -13,6 +16,7 @@ public class OrderConsoleApplication {
     private Client user;
     
     Scanner input = new Scanner(System.in);
+    private OrderActionService orderActionService;
     private Order order;
     private final String  forBeautiesTop ="*****************Pizza*****************";
     private final String  forBeautiesFooter="_______________________________________";
@@ -25,6 +29,8 @@ public class OrderConsoleApplication {
     public OrderConsoleApplication(Client user) {
         this.user = user;
         this.order = new Order();
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        orderActionService = context.getBean(OrderActionService.class);
     }
     
     public void start(){
@@ -65,8 +71,7 @@ public class OrderConsoleApplication {
             
             if(0<=id && id<Dough.values().length){
                 order.setDough(Dough.values()[id].toString());
-                OrderActionService serv = new OrderActionService();
-                double price = serv.getPriceForProduct("Dough");
+                double price = orderActionService.getPriceForProduct("Dough");
                 order.getFilling().put("Dough", id + 1);
                 priceChange((int) (price * (id + 1)));//***********
                 println(forBeautiesFooter);
@@ -74,7 +79,8 @@ public class OrderConsoleApplication {
                 println("Sorry, I don't know this Dough.\nTry to enter again.");
                 choiceOfDough();
             }
-        }catch(Exception ex){
+        }
+        catch(Exception ex){
             println("Sorry, we're out of Dough at the moment.\n Please choose another one.");
             choiceOfDough();
         }
@@ -90,8 +96,7 @@ public class OrderConsoleApplication {
             int id = input.nextInt();
             if(0<=id && id<Sauce.values().length){
                 order.setSauce(Sauce.values()[id].toString());
-                OrderActionService serv = new OrderActionService();
-                double price = serv.getPriceForProduct(Sauce.values()[id].toString());
+                double price = orderActionService.getPriceForProduct(Sauce.values()[id].toString());
                 order.getFilling().put(Sauce.values()[id].toString(), 1);
                 priceChange((int) price);//***********
                 println(forBeautiesFooter);
@@ -124,8 +129,7 @@ public class OrderConsoleApplication {
                     //noDone=false;
                 } else {
                     if (0 <= Integer.parseInt(id) && Integer.parseInt(id) < Filling.values().length) {
-                        OrderActionService serv = new OrderActionService();
-                        double price = serv.getPriceForProduct(Filling.values()[Integer.parseInt(id)].toString());
+                        double price = orderActionService.getPriceForProduct(Filling.values()[Integer.parseInt(id)].toString());
                         order.getFilling().put(Filling.values()[Integer.parseInt(id)].toString(), Integer.parseInt(count));
                         priceChange((int) price * Integer.parseInt(count));// доделать!!!!
                     } else {
@@ -186,9 +190,8 @@ public class OrderConsoleApplication {
         input.nextLine();
         getComment();
         println("Your order is issued");
-        OrderActionService serv = new OrderActionService();
         String address = order.getCity() + " " + order.getHouseNumber() + " " + order.getApartment(); //TODO set address from order
-        serv.createOrder(user.getEmail(), order.getFilling(), address, order.getComment());
+        orderActionService.createOrder(user.getEmail(), order.getFilling(), address, order.getComment());
         println(forBeautiesFooter);
         CommandsForConsoleApplication.getCommandsForConsoleApplication().readingCommand();
     }
